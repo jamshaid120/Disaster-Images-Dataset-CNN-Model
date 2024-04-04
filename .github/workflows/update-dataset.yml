@@ -3,7 +3,7 @@ name: Fetch Kaggle Dataset
 on:
   schedule:
     # Runs at 6:05 AM UTC on April 5, 2024
-    - cron: '10 6 4 4 *'
+    - cron: '30 6 4 4 *'
 
 jobs:
   fetch-dataset:
