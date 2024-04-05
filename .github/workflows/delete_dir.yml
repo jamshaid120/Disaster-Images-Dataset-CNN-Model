@@ -1,0 +1,26 @@
+name: Delete Flood Directory
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  delete-flood-directory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Delete flood directory
+        run: |
+          rm -rf data/DisasterModel/test/flood
+          rm -rf data/DisasterModel/train/flood
+          rm -rf data/DisasterModel/validation/flood
+          rm -rf data/DisasterModel/Cyclone_Wildfire_Flood_Earthquake_Dataset/Flood
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add -A
+          git commit -m "Remove flood directory" || echo "No changes to commit"
+          git push
