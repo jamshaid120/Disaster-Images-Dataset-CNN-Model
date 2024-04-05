@@ -12,6 +12,8 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: '3.8' # Set this to the Python version you need        
 
       - name: Install Kaggle CLI
         run: pip install kaggle
