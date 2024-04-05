@@ -2,30 +2,45 @@ name: Fetch Kaggle Dataset
 
 on:
   workflow_dispatch:
+
 jobs:
   fetch-dataset:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v3
-    - name: Install Kaggle CLI
-      run: pip install kaggle
-    - name: Configure Kaggle API Credentials
-      env:
-        KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-        KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-      run: |
-        mkdir ~/.kaggle
-        echo '{"username":"${{ secrets.KAGGLE_USERNAME }}","key":"${{ secrets.KAGGLE_KEY }}"}' > ~/.kaggle/kaggle.json
-        chmod 600 ~/.kaggle/kaggle.json
-    - name: Download Dataset
-      run: kaggle datasets download -d mikolajbabula/disaster-images-dataset-cnn-model --path ./data --unzip
-    - name: Commit and Push Dataset
-      run: |
-        git config --global user.email "jamshaidiqbal120@gmail.com"
-        git config --global user.name "Jamshaid"
-        git add data/*
-        git commit -m "Fetch and update Kaggle dataset"
-        git push
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+
+      - name: Install Kaggle CLI
+        run: pip install kaggle
+
+      - name: Configure Kaggle API Credentials
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          mkdir -p ~/.kaggle
+          echo '{"username":"${{ secrets.KAGGLE_USERNAME }}","key":"${{ secrets.KAGGLE_KEY }}"}' > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Download Dataset
+        run: kaggle datasets download -d mikolajbabula/disaster-images-dataset-cnn-model --path ./data --unzip
+
+      # Optional: Enable Git Debug Logging
+      # Uncomment the next two lines if you need detailed debug logs from Git
+      #- name: Enable Git Debug Logging
+      #  run: git config --global core.sshCommand 'ssh -vvv'
+
+      - name: Pull Latest Changes from Repository
+        run: git pull origin ${{ github.ref }}
+
+      - name: Commit and Push Dataset
+        run: |
+          git config --global user.email "jamshaidiqbal120@gmail.com"
+          git config --global user.name "Jamshaid"
+          git add data/*
+          # The --allow-empty flag avoids failing if no changes exist
+          git commit -m "Fetch and update Kaggle dataset" --allow-empty
+          git push
